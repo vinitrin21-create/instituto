@@ -53,7 +53,14 @@
   .popup-text { font-size: 13px; color: #444; line-height: 1.6; }
   .popup-close { position: absolute; top: 12px; right: 14px; background: none; border: none; font-size: 18px; cursor: pointer; color: #aaa; line-height: 1; }
   .popup-close:hover { color: #333; }
+  .summary-item:last-child { border-bottom: none; }
 
+  .sidebar-tarefas { margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px solid #e8e8e4; }
+  .sidebar-tarefas-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: #888; padding-bottom: 8px; border-bottom: 1px solid #e8e8e4; margin-bottom: 10px; }
+  .tarefas-row { display: flex; align-items: baseline; gap: 8px; padding: 6px 0; border-bottom: 1px solid #f5f5f3; }
+  .tarefas-row:last-child { border-bottom: none; }
+  .tarefas-num { font-size: 18px; font-weight: 700; color: #1D9E75; min-width: 28px; text-align: right; }
+  .tarefas-name { font-size: 13px; color: #1a1a1a; }
   @media (max-width: 700px) {
     .layout { flex-direction: column; }
     .sidebar { width: 100%; position: static; }
@@ -126,6 +133,14 @@
         <div class="doc-name">Estatuto Social</div>
         <a class="doc-link" href="https://docs.google.com/document/d/1AJIPeDI4SZgpifqNrQMEGgWPZP42tjsCktDL0_4Vark/edit?usp=sharing" target="_blank">Abrir documento →</a>
       </div>
+    </div>
+
+    <div class="sidebar-tarefas">
+      <div class="sidebar-tarefas-title">Tarefas</div>
+      <div class="tarefas-row"><span class="tarefas-num">11</span><span class="tarefas-name">Vinicius Trindade</span></div>
+      <div class="tarefas-row"><span class="tarefas-num">05</span><span class="tarefas-name">Fábio Dudus</span></div>
+      <div class="tarefas-row"><span class="tarefas-num">06</span><span class="tarefas-name">Gisele Carelli</span></div>
+      <div class="tarefas-row"><span class="tarefas-num">03</span><span class="tarefas-name">Claudecir Bianco</span></div>
     </div>
   </div>
 </div>
@@ -362,6 +377,53 @@ data.forEach(section => {
   container.appendChild(sec);
 });
 
+
+function updateSummary() {
+  const counts = {};
+  data.forEach(section => {
+    section.items.forEach(item => {
+      const name = item.resp || 'Sem responsável';
+      if (!counts[name]) counts[name] = { done: 0, pending: 0 };
+      if (item.done) {
+        counts[name].done++;
+      } else {
+        counts[name].pending++;
+      }
+    });
+  });
+
+  // Also count dynamically checked items
+  const rows = document.querySelectorAll('.cl-item');
+  const dynCounts = {};
+  rows.forEach(row => {
+    const cb = row.querySelector('input[type=checkbox]');
+    const respInput = row.querySelector('.cl-resp');
+    const badge = row.querySelector('.badge-done');
+    const nameSpan = row.querySelectorAll('span');
+    let name = null;
+    if (respInput) name = respInput.value || 'Sem responsável';
+    else if (nameSpan.length > 1) name = nameSpan[nameSpan.length - 1].textContent || 'Sem responsável';
+    if (!name) name = 'Sem responsável';
+    if (!dynCounts[name]) dynCounts[name] = { done: 0, pending: 0 };
+    if (cb && cb.checked) dynCounts[name].done++;
+    else if (cb) dynCounts[name].pending++;
+  });
+
+  const el = document.getElementById('summary-list');
+  el.innerHTML = '';
+  const order = ['Vinicius Trindade','Fábio Dudus','Gisele Carelli','Claudecir Bianco'];
+  order.forEach(name => {
+    const c = dynCounts[name];
+    if (!c) return;
+    const div = document.createElement('div');
+    div.className = 'summary-item';
+    div.innerHTML = '<span class="summary-name">' + name + '</span><div class="summary-counts">'
+      + (c.done ? '<span class="summary-badge done">✓ ' + c.done + '</span>' : '')
+      + (c.pending ? '<span class="summary-badge pending">' + c.pending + ' pendente' + (c.pending > 1 ? 's' : '') + '</span>' : '')
+      + '</div>';
+    el.appendChild(div);
+  });
+}
 function updateProgress() {
   const done = allCheckboxes.filter(c => c.checked).length;
   const pct = Math.round((done / total) * 100);
