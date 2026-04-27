@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checklist – Transição para Instituto Cidade Celeiro</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; background: #f5f5f3; color: #1a1a1a; padding: 2rem; }
+  .wrap { max-width: 800px; margin: 0 auto; background: #fff; border-radius: 12px; padding: 2rem; border: 1px solid #e0e0d8; }
+  .cl-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+  .cl-title { font-size: 20px; font-weight: 600; color: #1a1a1a; }
+  .cl-btn-print { font-size: 13px; padding: 7px 18px; cursor: pointer; border-radius: 8px; background: transparent; border: 1px solid #ccc; color: #333; }
+  .cl-btn-print:hover { background: #f5f5f3; }
+  .cl-progress { margin-bottom: 2rem; }
+  .cl-progress-bar-bg { height: 5px; background: #e8e8e4; border-radius: 4px; overflow: hidden; }
+  .cl-progress-bar { height: 5px; background: #1D9E75; border-radius: 4px; transition: width 0.3s; width: 0%; }
+  .cl-progress-label { font-size: 12px; color: #888; margin-top: 6px; }
+  .cl-section { margin-bottom: 1.75rem; }
+  .cl-section-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: #888; padding-bottom: 8px; border-bottom: 1px solid #e8e8e4; margin-bottom: 4px; }
+  .cl-item { display: flex; align-items: center; gap: 12px; padding: 10px 8px; border-radius: 8px; transition: background 0.15s; }
+  .cl-item:hover { background: #f9f9f7; }
+  .cl-item input[type=checkbox] { width: 16px; height: 16px; flex-shrink: 0; cursor: pointer; accent-color: #1D9E75; }
+  .cl-label { flex: 1; font-size: 14px; color: #1a1a1a; line-height: 1.5; transition: color 0.2s; }
+  .cl-resp { font-size: 13px; border: none; border-bottom: 1px solid #ddd; background: transparent; color: #1a1a1a; padding: 2px 4px; width: 160px; outline: none; }
+  .cl-resp:focus { border-bottom-color: #1D9E75; }
+  .cl-resp::placeholder { color: #bbb; }
+  .cl-item.done .cl-label { color: #bbb; text-decoration: line-through; }
+  .badge-done { font-size: 10px; font-weight: 600; background: #E1F5EE; color: #0F6E56; padding: 3px 10px; border-radius: 20px; white-space: nowrap; }
+  @media print {
+    body { background: #fff; padding: 0; }
+    .wrap { border: none; padding: 1rem; box-shadow: none; }
+    .cl-btn-print { display: none; }
+    .cl-item:hover { background: transparent; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="cl-header">
+    <div class="cl-title">Checklist – Transição para Instituto Cidade Celeiro</div>
+    <button class="cl-btn-print" onclick="window.print()">Imprimir</button>
+  </div>
+
+  <div class="cl-progress">
+    <div class="cl-progress-bar-bg"><div class="cl-progress-bar" id="bar"></div></div>
+    <div class="cl-progress-label" id="prog-label"></div>
+  </div>
+
+  <div id="checklist"></div>
+</div>
+
+<script>
+const data = [
+  { cat: "Diretoria", items: [
+    { text: "Realizar AGE de eleição da nova diretoria", done: true, resp: "Claudecir Bianco" },
+    { text: "Registrar ata de eleição da nova diretoria em cartório", done: true, resp: "Claudecir Bianco" }
+  ]},
+  { cat: "Documentos", items: [
+    { text: "Preencher o Edital de Convocação da AGE (data, horário, local, CNPJ) — assina Fábio Dudus", done: false, resp: "" },
+    { text: "Revisar e assinar o novo Estatuto Social", done: false, resp: "" },
+    { text: "Preencher a Ata da AGE (data, local, CNPJ, presidente e secretário da mesa)", done: false, resp: "" }
+  ]},
+  { cat: "Assembleia", items: [
+    { text: "Definir data, horário e local da AGE", done: false, resp: "" },
+    { text: "Enviar o Edital aos associados com no mínimo 15 dias de antecedência", done: false, resp: "" },
+    { text: "Realizar a AGE e coletar assinaturas na lista de presença", done: false, resp: "" },
+    { text: "Registrar as 3 deliberações em ata: novo nome, nova sede e novo estatuto", done: false, resp: "" }
+  ]},
+  { cat: "Cartório", items: [
+    { text: "Registrar Ata + Estatuto no cartório de origem em Curitiba", done: false, resp: "" },
+    { text: "Formalizar a transferência de sede para Indaiatuba/SP", done: false, resp: "" }
+  ]},
+  { cat: "Receita Federal", items: [
+    { text: "Atualizar o CNPJ: nome, endereço e diretoria (via DBE)", done: false, resp: "" }
+  ]},
+  { cat: "Atualizações Operacionais", items: [
+    { text: "Atualizar dados bancários", done: false, resp: "" },
+    { text: "Atualizar contratos e convênios ativos", done: false, resp: "" },
+    { text: "Comunicar parceiros e mantenedores", done: false, resp: "" },
+    { text: "Atualizar identidade institucional (e-mail, site, redes sociais)", done: false, resp: "" }
+  ]}
+];
+
+const total = data.reduce((s, c) => s + c.items.length, 0);
+const container = document.getElementById('checklist');
+let allCheckboxes = [];
+
+data.forEach(section => {
+  const sec = document.createElement('div');
+  sec.className = 'cl-section';
+
+  const title = document.createElement('div');
+  title.className = 'cl-section-title';
+  title.textContent = section.cat;
+  sec.appendChild(title);
+
+  section.items.forEach(item => {
+    const row = document.createElement('div');
+    row.className = 'cl-item' + (item.done ? ' done' : '');
+
+    const cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.checked = item.done;
+
+    const lbl = document.createElement('span');
+    lbl.className = 'cl-label';
+    lbl.textContent = item.text;
+
+    cb.addEventListener('change', () => {
+      row.classList.toggle('done', cb.checked);
+      updateProgress();
+    });
+
+    row.appendChild(cb);
+    row.appendChild(lbl);
+
+    if (item.done) {
+      const badge = document.createElement('span');
+      badge.className = 'badge-done';
+      badge.textContent = 'Concluído';
+      row.appendChild(badge);
+    } else {
+      const resp = document.createElement('input');
+      resp.type = 'text';
+      resp.className = 'cl-resp';
+      resp.placeholder = 'Responsável';
+      resp.value = item.resp || '';
+      row.appendChild(resp);
+    }
+
+    sec.appendChild(row);
+    allCheckboxes.push(cb);
+  });
+
+  container.appendChild(sec);
+});
+
+function updateProgress() {
+  const done = allCheckboxes.filter(c => c.checked).length;
+  const pct = Math.round((done / total) * 100);
+  document.getElementById('bar').style.width = pct + '%';
+  document.getElementById('prog-label').textContent = done + ' de ' + total + ' tarefas concluídas';
+}
+
+updateProgress();
+</script>
+</body>
+</html>
