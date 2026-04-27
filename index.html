@@ -28,15 +28,32 @@
   .cl-progress-label { font-size: 12px; color: #888; margin-top: 6px; }
   .cl-section { margin-bottom: 1.75rem; }
   .cl-section-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: #888; padding-bottom: 8px; border-bottom: 1px solid #e8e8e4; margin-bottom: 4px; }
-  .cl-item { display: flex; align-items: center; gap: 12px; padding: 10px 8px; border-radius: 8px; transition: background 0.15s; }
+  .cl-item { display: flex; align-items: center; gap: 10px; padding: 10px 8px; border-radius: 8px; transition: background 0.15s; position: relative; }
   .cl-item:hover { background: #f9f9f7; }
   .cl-item input[type=checkbox] { width: 16px; height: 16px; flex-shrink: 0; cursor: pointer; accent-color: #1D9E75; }
   .cl-label { flex: 1; font-size: 14px; color: #1a1a1a; line-height: 1.5; transition: color 0.2s; }
-  .cl-resp { font-size: 13px; border: none; border-bottom: 1px solid #ddd; background: transparent; color: #1a1a1a; padding: 2px 4px; width: 150px; outline: none; }
+  .cl-resp { font-size: 13px; border: none; border-bottom: 1px solid #ddd; background: transparent; color: #1a1a1a; padding: 2px 4px; width: 130px; outline: none; flex-shrink: 0; }
   .cl-resp:focus { border-bottom-color: #1D9E75; }
   .cl-resp::placeholder { color: #bbb; }
   .cl-item.done .cl-label { color: #bbb; text-decoration: line-through; }
-  .badge-done { font-size: 10px; font-weight: 600; background: #E1F5EE; color: #0F6E56; padding: 3px 10px; border-radius: 20px; white-space: nowrap; }
+  .badge-done { font-size: 10px; font-weight: 600; background: #E1F5EE; color: #0F6E56; padding: 3px 10px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
+
+  /* Help button */
+  .help-btn { width: 18px; height: 18px; border-radius: 50%; background: #e8e8e4; border: none; cursor: pointer; font-size: 11px; font-weight: 700; color: #888; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: background 0.15s; position: relative; }
+  .help-btn:hover { background: #1D9E75; color: #fff; }
+
+  /* Popup overlay */
+  .popup-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 100; align-items: center; justify-content: center; }
+  .popup-overlay.active { display: flex; }
+  .popup-box { background: #fff; border-radius: 12px; padding: 1.5rem; max-width: 440px; width: 90%; box-shadow: 0 8px 32px rgba(0,0,0,0.12); position: relative; }
+  .popup-tag { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: #1D9E75; margin-bottom: 6px; }
+  .popup-title { font-size: 15px; font-weight: 600; color: #1a1a1a; margin-bottom: 12px; line-height: 1.4; }
+  .popup-section { margin-bottom: 12px; }
+  .popup-section-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #888; margin-bottom: 4px; }
+  .popup-text { font-size: 13px; color: #444; line-height: 1.6; }
+  .popup-close { position: absolute; top: 12px; right: 14px; background: none; border: none; font-size: 18px; cursor: pointer; color: #aaa; line-height: 1; }
+  .popup-close:hover { color: #333; }
+
   @media (max-width: 700px) {
     .layout { flex-direction: column; }
     .sidebar { width: 100%; position: static; }
@@ -47,12 +64,34 @@
     .sidebar { display: none; }
     .main { border: none; padding: 1rem; }
     .cl-item:hover { background: transparent; }
+    .help-btn { display: none; }
   }
 </style>
 </head>
 <body>
-<div class="layout">
 
+<!-- Popup -->
+<div class="popup-overlay" id="popup-overlay">
+  <div class="popup-box">
+    <button class="popup-close" onclick="closePopup()">×</button>
+    <div class="popup-tag">Ajuda</div>
+    <div class="popup-title" id="popup-title"></div>
+    <div class="popup-section">
+      <div class="popup-section-title">O que é</div>
+      <div class="popup-text" id="popup-oque"></div>
+    </div>
+    <div class="popup-section">
+      <div class="popup-section-title">O que fazer</div>
+      <div class="popup-text" id="popup-ofazer"></div>
+    </div>
+    <div class="popup-section" id="popup-quem-section">
+      <div class="popup-section-title">Quem faz</div>
+      <div class="popup-text" id="popup-quem"></div>
+    </div>
+  </div>
+</div>
+
+<div class="layout">
   <div class="main">
     <div class="cl-title">Checklist – Transição para Instituto Cidade Celeiro</div>
     <div class="cl-progress">
@@ -68,39 +107,21 @@
     </div>
     <div class="sidebar-title">Documentos</div>
     <div class="doc-item">
-      <div class="doc-icon">
-        <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M4 2h6l3 3v9H4V2z" stroke="#0F6E56" stroke-width="1.2" fill="none"/>
-          <path d="M10 2v3h3" stroke="#0F6E56" stroke-width="1.2"/>
-          <path d="M6 8h5M6 10.5h5M6 5.5h2" stroke="#0F6E56" stroke-width="1" stroke-linecap="round"/>
-        </svg>
-      </div>
+      <div class="doc-icon"><svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 2h6l3 3v9H4V2z" stroke="#0F6E56" stroke-width="1.2" fill="none"/><path d="M10 2v3h3" stroke="#0F6E56" stroke-width="1.2"/><path d="M6 8h5M6 10.5h5M6 5.5h2" stroke="#0F6E56" stroke-width="1" stroke-linecap="round"/></svg></div>
       <div class="doc-info">
         <div class="doc-name">Edital de Convocação</div>
         <a class="doc-link" href="https://docs.google.com/document/d/1mEYZ6cRNzxh_jvUgULk99as6N4miPj7TLVv__KPvGgc/edit?usp=sharing" target="_blank">Abrir documento →</a>
       </div>
     </div>
     <div class="doc-item">
-      <div class="doc-icon">
-        <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M4 2h6l3 3v9H4V2z" stroke="#0F6E56" stroke-width="1.2" fill="none"/>
-          <path d="M10 2v3h3" stroke="#0F6E56" stroke-width="1.2"/>
-          <path d="M6 8h5M6 10.5h5M6 5.5h2" stroke="#0F6E56" stroke-width="1" stroke-linecap="round"/>
-        </svg>
-      </div>
+      <div class="doc-icon"><svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 2h6l3 3v9H4V2z" stroke="#0F6E56" stroke-width="1.2" fill="none"/><path d="M10 2v3h3" stroke="#0F6E56" stroke-width="1.2"/><path d="M6 8h5M6 10.5h5M6 5.5h2" stroke="#0F6E56" stroke-width="1" stroke-linecap="round"/></svg></div>
       <div class="doc-info">
         <div class="doc-name">Ata da Assembleia</div>
         <a class="doc-link" href="https://docs.google.com/document/d/1XSRu-FUSb_JQEYEkg3fOcJ5ym238MFIPHT5cOaLmm5s/edit?usp=sharing" target="_blank">Abrir documento →</a>
       </div>
     </div>
     <div class="doc-item">
-      <div class="doc-icon">
-        <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M4 2h6l3 3v9H4V2z" stroke="#0F6E56" stroke-width="1.2" fill="none"/>
-          <path d="M10 2v3h3" stroke="#0F6E56" stroke-width="1.2"/>
-          <path d="M6 8h5M6 10.5h5M6 5.5h2" stroke="#0F6E56" stroke-width="1" stroke-linecap="round"/>
-        </svg>
-      </div>
+      <div class="doc-icon"><svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 2h6l3 3v9H4V2z" stroke="#0F6E56" stroke-width="1.2" fill="none"/><path d="M10 2v3h3" stroke="#0F6E56" stroke-width="1.2"/><path d="M6 8h5M6 10.5h5M6 5.5h2" stroke="#0F6E56" stroke-width="1" stroke-linecap="round"/></svg></div>
       <div class="doc-info">
         <div class="doc-name">Estatuto Social</div>
         <a class="doc-link" href="https://docs.google.com/document/d/1AJIPeDI4SZgpifqNrQMEGgWPZP42tjsCktDL0_4Vark/edit?usp=sharing" target="_blank">Abrir documento →</a>
@@ -110,6 +131,89 @@
 </div>
 
 <script>
+const helps = {
+  "Realizar AGE de eleição da nova diretoria": {
+    oque: "A Assembleia Geral Extraordinária (AGE) é a reunião formal dos associados convocada para deliberar sobre assuntos específicos fora do calendário ordinário. Neste caso, foi realizada exclusivamente para eleger a nova diretoria do Instituto Vida.",
+    ofazer: "Já foi realizada. Nenhuma ação necessária.",
+    quem: "Concluído pela diretoria anterior (Claudecir Bianco)."
+  },
+  "Registrar ata de eleição da nova diretoria em cartório": {
+    oque: "Após a AGE, a ata lavrada precisa ser registrada no Cartório de Registro Civil de Pessoas Jurídicas para ter validade legal. Sem o registro, a nova diretoria não tem reconhecimento jurídico formal.",
+    ofazer: "Já foi realizado. Nenhuma ação necessária.",
+    quem: "Concluído pela diretoria anterior (Claudecir Bianco)."
+  },
+  "Preencher o Edital de Convocação da AGE (data, horário, local, CNPJ) — assina Fábio Dudus": {
+    oque: "O Edital é o documento oficial que convoca os associados para a Assembleia Geral Extraordinária. Ele deve informar data, horário (1ª e 2ª convocação), local, CNPJ e a pauta completa.",
+    ofazer: "Preencher os campos em branco no modelo disponível na sidebar. O edital deve ser enviado aos associados com no mínimo 15 dias de antecedência.",
+    quem: "Fábio Dudus (Presidente), que assina o documento."
+  },
+  "Revisar e assinar o novo Estatuto Social": {
+    oque: "O Estatuto Social é o documento que define as regras de funcionamento do Instituto: nome, sede, finalidade, estrutura, mandatos e demais normas. O novo estatuto já foi redigido e está disponível na sidebar.",
+    ofazer: "Ler o documento completo, verificar se todos os dados estão corretos (nome, sede, composição da diretoria) e assinar. Recomenda-se que o Fábio Carneiro (advogado) revise antes da AGE.",
+    quem: "Fábio Dudus (Presidente) e demais membros da diretoria."
+  },
+  "Preencher a Ata da AGE (data, local, CNPJ, presidente e secretário da mesa)": {
+    oque: "A Ata é o registro oficial das decisões tomadas na Assembleia. Ela documenta quem esteve presente, quais deliberações foram aprovadas e por quem. Tem valor jurídico e será registrada em cartório.",
+    ofazer: "Preencher os campos em branco no modelo disponível na sidebar antes da AGE. Durante a assembleia, completar com os dados reais e coletar as assinaturas dos presentes.",
+    quem: "Secretário(a) da mesa da assembleia, com assinatura do Presidente."
+  },
+  "Definir data, horário e local da AGE": {
+    oque: "A AGE precisa ter data, horário e local definidos com antecedência para que o Edital possa ser enviado aos associados com pelo menos 15 dias de antecedência.",
+    ofazer: "Alinhar com os membros da diretoria e associados uma data viável. Definir também o horário da 1ª convocação e da 2ª convocação (geralmente 30 minutos depois). Confirmar o local físico ou virtual.",
+    quem: "Fábio Dudus (Presidente), em alinhamento com a diretoria."
+  },
+  "Enviar o Edital aos associados com no mínimo 15 dias de antecedência": {
+    oque: "O Estatuto atual do Instituto Vida (Art. 18) exige que a convocação seja feita com no mínimo 15 dias de antecedência, por e-mail, circular ou outro meio conveniente.",
+    ofazer: "Após preencher o Edital, enviá-lo para todos os associados por e-mail ou WhatsApp. Guardar comprovante do envio (prints, e-mails enviados) para eventuais questionamentos futuros.",
+    quem: "Fábio Dudus (Presidente) ou alguém por ele designado."
+  },
+  "Realizar a AGE e coletar assinaturas na lista de presença": {
+    oque: "A Assembleia Geral Extraordinária é a reunião formal onde as deliberações são votadas e aprovadas pelos associados presentes. A lista de presença é documento obrigatório e será anexada à ata.",
+    ofazer: "Conduzir a assembleia seguindo a pauta do Edital. Registrar os presentes na lista de presença. Colher aprovação das 3 deliberações: novo nome, nova sede e novo estatuto.",
+    quem: "Fábio Dudus preside a assembleia. Um secretário(a) redige a ata e gerencia a lista de presença."
+  },
+  "Registrar as 3 deliberações em ata: novo nome, nova sede e novo estatuto": {
+    oque: "A ata deve registrar formalmente as 3 decisões tomadas na AGE: (1) alteração do nome para Instituto Cidade Celeiro, (2) transferência da sede para Indaiatuba/SP, e (3) aprovação integral do novo Estatuto Social.",
+    ofazer: "Durante ou logo após a assembleia, redigir a ata completa com todas as deliberações, resultado das votações e assinaturas. O texto deve ser claro e sem ambiguidades para evitar problemas no cartório.",
+    quem: "Secretário(a) da assembleia, com revisão e assinatura do Presidente (Fábio Dudus)."
+  },
+  "Registrar Ata + Estatuto no cartório de origem em Curitiba": {
+    oque: "O Instituto Vida está registrado no Cartório de Registro Civil de Pessoas Jurídicas de Curitiba. Toda alteração estatutária precisa ser averbada nesse cartório para ter validade legal.",
+    ofazer: "Levar ao cartório: a ata assinada, o novo estatuto, a lista de presença e documentos da diretoria (RG, CPF). O cartório fará a averbação das alterações no registro da entidade.",
+    quem: "Fábio Dudus (Presidente) ou advogado com procuração. Recomenda-se envolver o Fábio Carneiro nesta etapa."
+  },
+  "Formalizar a transferência de sede para Indaiatuba/SP": {
+    oque: "Após o registro em Curitiba, a mudança de sede precisa ser reconhecida na comarca de Indaiatuba/SP. Alguns cartórios fazem isso na mesma averbação; outros orientam a levar os documentos para registro também em Indaiatuba.",
+    ofazer: "Ao registrar em Curitiba, perguntar ao cartório sobre o procedimento para transferência de sede entre estados. Se necessário, levar os documentos já registrados para um cartório de Registro Civil de Pessoas Jurídicas em Indaiatuba.",
+    quem: "Fábio Dudus (Presidente) ou advogado com procuração."
+  },
+  "Atualizar o CNPJ: nome, endereço e diretoria (via DBE)": {
+    oque: "O CNPJ do Instituto Vida precisa refletir o novo nome (Instituto Cidade Celeiro), o novo endereço (Indaiatuba/SP) e a nova diretoria. Isso é feito pela Receita Federal via sistema DBE (Documento Básico de Entrada).",
+    ofazer: "Após o registro no cartório, acessar o sistema DBE da Receita Federal (gov.br), preencher as alterações cadastrais e protocolar. Normalmente o contador ou advogado faz esse processo.",
+    quem: "Contador da entidade ou advogado, com autorização do Presidente."
+  },
+  "Atualizar dados bancários": {
+    oque: "A conta bancária do Instituto está vinculada ao CNPJ e ao nome antigo. Após a mudança, o banco precisa ser informado para atualizar o cadastro e os documentos da conta.",
+    ofazer: "Entrar em contato com o gerente do banco, levar a ata registrada e o novo estatuto, e solicitar a atualização do nome e endereço da entidade na conta. Verificar se há contratos bancários que precisam ser aditados.",
+    quem: "Fábio Dudus (Presidente) e/ou Gisele Dudus (Tesoureira)."
+  },
+  "Atualizar contratos e convênios ativos": {
+    oque: "São todos os acordos formais que o Instituto tem com terceiros: contratos com fornecedores, convênios com prefeituras ou órgãos públicos, acordos com parceiros e plataformas digitais.",
+    ofazer: "Fazer um levantamento de todos os contratos ativos. Para cada um, comunicar a outra parte sobre a mudança de nome e sede. Dependendo do contrato, pode ser necessário assinar um aditivo contratual com os novos dados.",
+    quem: "Fábio Dudus (Presidente) em conjunto com a área responsável por cada contrato."
+  },
+  "Comunicar parceiros e mantenedores": {
+    oque: "Parceiros, mantenedores, doadores e apoiadores precisam ser informados sobre a mudança de nome e sede para que continuem reconhecendo a organização e direcionando recursos corretamente.",
+    ofazer: "Enviar uma comunicação formal (e-mail ou carta) explicando a mudança, reforçando a continuidade dos objetivos e informando os novos dados (nome, sede, CNPJ atualizado). É uma oportunidade de reforçar o relacionamento.",
+    quem: "Fábio Dudus (Presidente) ou equipe de comunicação/relacionamento."
+  },
+  "Atualizar identidade institucional (e-mail, site, redes sociais)": {
+    oque: "Todo o material de comunicação do Instituto — e-mails institucionais, site, perfis em redes sociais, assinaturas de e-mail, materiais impressos — precisa refletir o novo nome e dados.",
+    ofazer: "Atualizar nome e bio nas redes sociais, ajustar o site (se houver), criar ou atualizar e-mails institucionais com o novo nome, e revisar qualquer material de apresentação ou comunicação externa.",
+    quem: "Equipe de comunicação ou responsável designado pela Diretoria."
+  }
+};
+
 const data = [
   { cat: "Diretoria", items: [
     { text: "Realizar AGE de eleição da nova diretoria", done: true, resp: "Claudecir Bianco" },
@@ -152,21 +256,38 @@ data.forEach(section => {
   title.className = 'cl-section-title';
   title.textContent = section.cat;
   sec.appendChild(title);
+
   section.items.forEach(item => {
     const row = document.createElement('div');
     row.className = 'cl-item' + (item.done ? ' done' : '');
+
     const cb = document.createElement('input');
     cb.type = 'checkbox';
     cb.checked = item.done;
+
     const lbl = document.createElement('span');
     lbl.className = 'cl-label';
     lbl.textContent = item.text;
+
     cb.addEventListener('change', () => {
       row.classList.toggle('done', cb.checked);
       updateProgress();
     });
+
     row.appendChild(cb);
     row.appendChild(lbl);
+
+    // Help button
+    const helpKey = item.text;
+    if (helps[helpKey]) {
+      const btn = document.createElement('button');
+      btn.className = 'help-btn';
+      btn.textContent = '?';
+      btn.title = 'Saiba mais';
+      btn.addEventListener('click', () => openPopup(helpKey));
+      row.appendChild(btn);
+    }
+
     if (item.done) {
       const badge = document.createElement('span');
       badge.className = 'badge-done';
@@ -180,9 +301,11 @@ data.forEach(section => {
       resp.value = item.resp || '';
       row.appendChild(resp);
     }
+
     sec.appendChild(row);
     allCheckboxes.push(cb);
   });
+
   container.appendChild(sec);
 });
 
@@ -193,6 +316,24 @@ function updateProgress() {
   document.getElementById('prog-label').textContent = done + ' de ' + total + ' tarefas concluídas';
 }
 updateProgress();
+
+function openPopup(key) {
+  const h = helps[key];
+  if (!h) return;
+  document.getElementById('popup-title').textContent = key;
+  document.getElementById('popup-oque').textContent = h.oque;
+  document.getElementById('popup-ofazer').textContent = h.ofazer;
+  document.getElementById('popup-quem').textContent = h.quem;
+  document.getElementById('popup-overlay').classList.add('active');
+}
+
+function closePopup() {
+  document.getElementById('popup-overlay').classList.remove('active');
+}
+
+document.getElementById('popup-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closePopup();
+});
 </script>
 </body>
 </html>
