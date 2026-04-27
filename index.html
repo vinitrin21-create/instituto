@@ -84,9 +84,9 @@
       <div class="popup-section-title">O que fazer</div>
       <div class="popup-text" id="popup-ofazer"></div>
     </div>
-    <div class="popup-section" id="popup-quem-section">
-      <div class="popup-section-title">Quem faz</div>
-      <div class="popup-text" id="popup-quem"></div>
+
+
+
     </div>
   </div>
 </div>
@@ -132,6 +132,42 @@
 
 <script>
 const helps = {
+  "Reunião com Claudecir para detalhes da transição": {
+    oque: "Reunião com o presidente anterior do Instituto Vida para alinhar todos os detalhes necessários para a transição institucional.",
+    ofazer: "Já realizada. Nenhuma ação necessária."
+  },
+  "Reunião com Fábio Cunha para custos da transição": {
+    oque: "Reunião com o advogado Fábio Carneiro Cunha para levantar os custos envolvidos no processo de transição: cartório, registros, taxas e honorários.",
+    ofazer: "Já realizada. Nenhuma ação necessária."
+  },
+  "Compra de domínio para o site do instituto": {
+    oque: "Aquisição do domínio (endereço web) oficial do Instituto Cidade Celeiro para uso futuro no site institucional.",
+    ofazer: "Já realizada. Nenhuma ação necessária."
+  },
+  "Criação do instagram do instituto (nome)": {
+    oque: "Criação e reserva do perfil oficial do Instituto Cidade Celeiro no Instagram.",
+    ofazer: "Já realizada. Nenhuma ação necessária."
+  },
+  "Criação de logo, identidade e conceito da nova marca": {
+    oque: "Desenvolvimento da identidade visual do Instituto Cidade Celeiro: logotipo, paleta de cores, tipografia e conceito de marca.",
+    ofazer: "Já realizada. Nenhuma ação necessária."
+  },
+  "Criar o Checklist de tarefas transição instituto": {
+    oque: "Documento interativo em HTML com todas as tarefas necessárias para a transição do Instituto Vida para o Instituto Cidade Celeiro, organizado por categorias, com checkboxes, campo de responsável e botões de ajuda.",
+    ofazer: "Já foi criado e está disponível para uso e compartilhamento com a equipe."
+  },
+  "Criar o documento \"Edital de Convocação\"": {
+    oque: "O Edital é o documento oficial que convoca os associados para a Assembleia Geral Extraordinária, informando data, horário, local e pauta.",
+    ofazer: "Já foi criado e está disponível na sidebar deste checklist para preenchimento e assinatura."
+  },
+  "Criar o documento \"Ata da Assembléia\"": {
+    oque: "A Ata é o registro oficial das decisões tomadas na Assembleia. Documenta presença, deliberações e aprovações com validade jurídica.",
+    ofazer: "Já foi criada e está disponível na sidebar deste checklist para preenchimento durante a AGE."
+  },
+  "Criar o documento \"Estatuto Social\"": {
+    oque: "O Estatuto Social define as regras de funcionamento do Instituto Cidade Celeiro: nome, sede, finalidade, estrutura, mandatos e normas gerais.",
+    ofazer: "Já foi criado e está disponível na sidebar deste checklist para revisão e assinatura."
+  },
   "Realizar AGE de eleição da nova diretoria": {
     oque: "A Assembleia Geral Extraordinária (AGE) é a reunião formal dos associados convocada para deliberar sobre assuntos específicos fora do calendário ordinário. Neste caso, foi realizada exclusivamente para eleger a nova diretoria do Instituto Vida.",
     ofazer: "Já foi realizada. Nenhuma ação necessária.",
@@ -215,33 +251,44 @@ const helps = {
 };
 
 const data = [
+  { cat: "Preparação", items: [
+    { text: "Reunião com Claudecir para detalhes da transição", done: true, resp: "Vinicius Trindade" },
+    { text: "Reunião com Fábio Cunha para custos da transição", done: true, resp: "Vinicius Trindade" },
+    { text: "Compra de domínio para o site do instituto", done: true, resp: "Vinicius Trindade" },
+    { text: "Criação do instagram do instituto (nome)", done: true, resp: "Vinicius Trindade" },
+    { text: "Criação de logo, identidade e conceito da nova marca", done: true, resp: "Vinicius Trindade" },
+    { text: "Criar o Checklist de tarefas transição instituto", done: true, resp: "Vinicius Trindade" },
+    { text: "Criar o documento \"Edital de Convocação\"", done: true, resp: "Vinicius Trindade" },
+    { text: "Criar o documento \"Ata da Assembléia\"", done: true, resp: "Vinicius Trindade" },
+    { text: "Criar o documento \"Estatuto Social\"", done: true, resp: "Vinicius Trindade" }
+  ]},
   { cat: "Diretoria", items: [
     { text: "Realizar AGE de eleição da nova diretoria", done: true, resp: "Claudecir Bianco" },
     { text: "Registrar ata de eleição da nova diretoria em cartório", done: true, resp: "Claudecir Bianco" }
   ]},
   { cat: "Documentos", items: [
-    { text: "Preencher o Edital de Convocação da AGE (data, horário, local, CNPJ) — assina Fábio Dudus", done: false, resp: "" },
-    { text: "Revisar e assinar o novo Estatuto Social", done: false, resp: "" },
-    { text: "Preencher a Ata da AGE (data, local, CNPJ, presidente e secretário da mesa)", done: false, resp: "" }
+    { text: "Preencher o Edital de Convocação da AGE (data, horário, local, CNPJ) — assina Fábio Dudus", done: false, resp: "Fábio Dudus" },
+    { text: "Revisar e assinar o novo Estatuto Social", done: false, resp: "Fábio Dudus" },
+    { text: "Preencher a Ata da AGE (data, local, CNPJ, presidente e secretário da mesa)", done: false, resp: "Gisele Carelli" }
   ]},
   { cat: "Assembleia", items: [
-    { text: "Definir data, horário e local da AGE", done: false, resp: "" },
-    { text: "Enviar o Edital aos associados com no mínimo 15 dias de antecedência", done: false, resp: "" },
-    { text: "Realizar a AGE e coletar assinaturas na lista de presença", done: false, resp: "" },
-    { text: "Registrar as 3 deliberações em ata: novo nome, nova sede e novo estatuto", done: false, resp: "" }
+    { text: "Definir data, horário e local da AGE", done: false, resp: "Fábio Dudus" },
+    { text: "Enviar o Edital aos associados com no mínimo 15 dias de antecedência", done: false, resp: "Gisele Carelli" },
+    { text: "Realizar a AGE e coletar assinaturas na lista de presença", done: false, resp: "Gisele Carelli" },
+    { text: "Registrar as 3 deliberações em ata: novo nome, nova sede e novo estatuto", done: false, resp: "Gisele Carelli" }
   ]},
   { cat: "Cartório", items: [
-    { text: "Registrar Ata + Estatuto no cartório de origem em Curitiba", done: false, resp: "" },
-    { text: "Formalizar a transferência de sede para Indaiatuba/SP", done: false, resp: "" }
+    { text: "Registrar Ata + Estatuto no cartório de origem em Curitiba", done: false, resp: "Claudecir Bianco" },
+    { text: "Formalizar a transferência de sede para Indaiatuba/SP", done: false, resp: "Fábio Dudus" }
   ]},
   { cat: "Receita Federal", items: [
-    { text: "Atualizar o CNPJ: nome, endereço e diretoria (via DBE)", done: false, resp: "" }
+    { text: "Atualizar o CNPJ: nome, endereço e diretoria (via DBE)", done: false, resp: "Gisele Carelli" }
   ]},
   { cat: "Atualizações Operacionais", items: [
-    { text: "Atualizar dados bancários", done: false, resp: "" },
-    { text: "Atualizar contratos e convênios ativos", done: false, resp: "" },
-    { text: "Comunicar parceiros e mantenedores", done: false, resp: "" },
-    { text: "Atualizar identidade institucional (e-mail, site, redes sociais)", done: false, resp: "" }
+    { text: "Atualizar dados bancários", done: false, resp: "Gisele Carelli" },
+    { text: "Atualizar contratos e convênios ativos", done: false, resp: "Fábio Dudus" },
+    { text: "Comunicar parceiros e mantenedores", done: false, resp: "Vinicius Trindade" },
+    { text: "Atualizar identidade institucional (e-mail, site, redes sociais)", done: false, resp: "Vinicius Trindade" }
   ]}
 ];
 
@@ -293,6 +340,12 @@ data.forEach(section => {
       badge.className = 'badge-done';
       badge.textContent = 'Concluído';
       row.appendChild(badge);
+      if (item.resp) {
+        const name = document.createElement('span');
+        name.style.cssText = 'font-size:12px;color:#aaa;white-space:nowrap;flex-shrink:0;';
+        name.textContent = item.resp;
+        row.appendChild(name);
+      }
     } else {
       const resp = document.createElement('input');
       resp.type = 'text';
@@ -323,7 +376,6 @@ function openPopup(key) {
   document.getElementById('popup-title').textContent = key;
   document.getElementById('popup-oque').textContent = h.oque;
   document.getElementById('popup-ofazer').textContent = h.ofazer;
-  document.getElementById('popup-quem').textContent = h.quem;
   document.getElementById('popup-overlay').classList.add('active');
 }
 
