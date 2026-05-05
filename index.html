@@ -37,6 +37,7 @@
   .col-badge { width: 86px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
   .col-resp  { width: 140px; flex-shrink: 0; display: flex; align-items: center; padding-left: 10px; }
   .badge-done { font-size: 10px; font-weight: 600; background: #E1F5EE; color: #0F6E56; padding: 3px 10px; border-radius: 20px; white-space: nowrap; }
+  .badge-soon { font-size: 10px; font-weight: 600; background: #f0f0ec; color: #aaa; padding: 3px 10px; border-radius: 20px; white-space: nowrap; }
   .resp-name { font-size: 12px; color: #aaa; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .help-btn { width: 18px; height: 18px; border-radius: 50%; background: #e8e8e4; border: none; cursor: pointer; font-size: 11px; font-weight: 700; color: #888; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: background 0.15s; }
   .help-btn:hover { background: #1D9E75; color: #fff; }
@@ -288,11 +289,9 @@ const data = [
   ]},
   { cat: "Documentos", items: [
     { id: "doc-1", text: "Preencher o Edital de Convocação da AGE (data, horário, local, CNPJ)", initialDone: true, resp: "Fábio Dudus" },
-    { id: "doc-2", text: "Assinar o Edital de Convocação da AGE", initialDone: false, resp: "Fábio Dudus" },
     { id: "doc-3", text: "Diretoria revisar o Estatuto Social", initialDone: true, resp: "Gisele Carelli" },
     { id: "doc-4", text: "Enviar Novo Estatuto Social para revisão jurídica (Carneiro Cunha)", initialDone: true, resp: "Gisele Carelli" },
     { id: "doc-5", text: "Cobrar versão jurídica atualizada do novo estatuto", initialDone: false, resp: "Gisele Carelli" },
-    { id: "doc-6", text: "Assinar o novo Estatuto Social", initialDone: false, resp: "Fábio Dudus" },
     { id: "doc-7", text: "Preencher a Ata da AGE (data, local, CNPJ, presidente e secretário da mesa)", initialDone: true, resp: "Gisele Carelli" },
     { id: "doc-8", text: "Solicitar Estatuto original registrado em cartório do Instituto Vida", initialDone: true, resp: "Vinicius Trindade" }
   ]},
@@ -311,7 +310,6 @@ const data = [
   ]},
   { cat: "Atualizações Operacionais", items: [
     { id: "op-1", text: "Atualizar dados bancários", initialDone: false, resp: "Gisele Carelli" },
-    { id: "op-2", text: "Atualizar contratos e convênios ativos", initialDone: false, resp: "Fábio Dudus" },
     { id: "op-3", text: "Comunicar parceiros e mantenedores", initialDone: false, resp: "Vinicius Trindade" },
     { id: "op-4", text: "Atualizar identidade institucional (e-mail, site, redes sociais)", initialDone: false, resp: "Vinicius Trindade" }
   ]}
@@ -430,6 +428,11 @@ function buildChecklist() {
         badge.className = 'badge-done';
         badge.textContent = 'Concluído';
         colBadge.appendChild(badge);
+      } else {
+        const badge = document.createElement('span');
+        badge.className = 'badge-soon';
+        badge.textContent = 'Em breve';
+        colBadge.appendChild(badge);
       }
       row.appendChild(colBadge);
 
@@ -457,12 +460,10 @@ function syncRowBadge(id) {
   const colBadge = row.querySelector('.col-badge');
   if (!colBadge) return;
   colBadge.innerHTML = '';
-  if (isDone) {
-    const badge = document.createElement('span');
-    badge.className = 'badge-done';
-    badge.textContent = 'Concluído';
-    colBadge.appendChild(badge);
-  }
+  const badge = document.createElement('span');
+  badge.className = isDone ? 'badge-done' : 'badge-soon';
+  badge.textContent = isDone ? 'Concluído' : 'Em breve';
+  colBadge.appendChild(badge);
 }
 
 // Override checkbox event to also sync badge
